@@ -1,0 +1,917 @@
+---
+title: "Important functions for data wrangling"
+author: "Template: Ian Hussey; Content: [Lukas Müller]"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    theme: flatly
+    toc: yes
+    toc_float: yes
+---
+
+```{r, include=FALSE}
+
+# set knit options
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE)
+
+# disable scientific notation
+options(scipen = 999) 
+
+```
+
+# Instructions
+
+Most data wrangling tasks can be accomplished with a relatively small number of functions. I've listed the most important ones here. 
+
+Use this file to keep notes about what a given function does in your own words, the situations where you would use it, and working examples. You can make use of built-in datasets to do this (e.g., `mtcars`) or load external data sets (although its easier to break the examples if you modify the data etc.).
+
+Learning how to wrangle data efficiently involves a combination of knowing how to break the problem down into smaller components; knowing which functions are available to accomplish each component operation and how to use them; how to search documentation to learn or refresh your knowledge of how a function works; and how to discover new functions that accomplish new component operations. 
+
+Remember that you can look up the help documentation for any function by typing a question mark followed by its name in the console, e.g., `?dplyr::mutate`. The help documentation provides details of a function's parameters and defaults, its outputs, and examples of its use. Note that when you can also open the help documentation for an entire package by typing the package name, e.g., `?dplyr`. This can be very useful to discover what other functions that package has: scroll down to the bottom of any help page and click the "Index" link to see all help pages for that package.
+
+I have prepended each function below with package it comes from so that you know. For example, `summarize` is listed as `dplyr::summarize`. Usually you don't have to do this when using a function, although you can use this to resolve a common bug known as name conflicts (see [this blog post](https://www.r-bloggers.com/2010/08/namespaces-and-name-conflicts/) for discussion). 
+
+# Resources (for this session and others)
+
+- You can find cheatsheets for the dplyr, tidyr, and RMarkdown in the /resources/cheatsheets folder.
+- The Open Source textbook R for Data Science (aka, [Wickham's R4DS](https://r4ds.hadley.nz/)) is invaluable. Hadley Wickham is the main developer of the "tidyverse" set of packages, including dplyr, tidyr, ggplot2, stringr, lubridate, and others. See its [section on data transformation](https://r4ds.hadley.nz/data-transform). 
+  - The entire second edition of the book is available at [https://r4ds.hadley.nz/](https://r4ds.hadley.nz/).
+  - The first edition is also available. It does some things better in my opinion, e.g., it has a better explanation of the pipe (`%>%` or `|>`). See [https://r4ds.had.co.nz/pipes.html](https://r4ds.had.co.nz/pipes.html). 
+  - The first edition also talks about RMarkdown, whereas the second edition has moved to a different technology called Quarto (which we won't cover, although they're similar). See [https://r4ds.had.co.nz/r-markdown.html](https://r4ds.had.co.nz/r-markdown.html).
+- For those of you who prefer to learn in an interactive environment, I now suggest this web app over Swirl as it is more user-friendly: [https://allisonhorst.shinyapps.io/dplyr-learnr/#section-welcome](https://allisonhorst.shinyapps.io/dplyr-learnr/#section-welcome).
+- For those of you who prefer some video content - although seeing other people code can never replace practicing coding yourself! - I can also recommend De Bruine et al.'s Open Source textbook and videos [Data Skills for Reproducible Research](https://psyteachr.github.io/reprores-v3/). E.g., see their page with links to videos for [dplyr](https://psyteachr.github.io/reprores-v3/dplyr.html) and [tidyr](https://psyteachr.github.io/reprores-v3/tidyr.html). 
+
+# Dependencies
+
+The packages these functions come from, which must be loaded to use them.
+
+```{r}
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(janitor)
+
+```
+
+# Basics
+
+## read_csv 
+
+vs. `read.csv()`
+
+*Always, always, always* use relative paths rather than absolute paths.
+
+- Absolute path (bad): "~/Ian/Desktop/my_project/data/data_raw.csv"
+- Relative path (good): "../data/data_raw.csv"
+
+When using relative paths: "../" means up one directory level, whereas "directory_name/" goes down one directory level.
+
+Relative paths will work on other machines, where absolute paths will break. 
+
+Relative paths only work in .Rmd files and not .R files. Even without RMarkdown's other benefits, this makes them worth using.
+
+Useful arguments:
+
+- `skip` can be used to skip the first N rows while reading the data
+
+```{r}
+
+
+
+# readr::read_csv()
+
+```
+
+## dir.create
+Die Funktion dir.create() in R wird verwendet, um ein neues Verzeichnis (Ordner) auf dem Dateisystem zu erstellen. Sie ist besonders nützlich, wenn du Daten oder Ergebnisse in einem neuen Ordner speichern möchtest, um deine Arbeitsumgebung oder dein Projekt übersichtlich zu gestalten.
+
+Die Funktion dir.create() ist besonders nützlich in der Datenanalyse, wenn du Ergebnisse (wie Grafiken, Tabellen oder Reports) in einem neuen Ordner speichern möchtest, um Ordnung in deinem Projekt zu halten. Außerdem kannst du Verzeichnisse dynamisch erstellen, wenn du z.B. in einem Skript festlegst, dass für jeden Monat oder jede Auswertung automatisch ein eigener Ordner generiert wird.
+
+```{r}
+
+# dir.create()
+
+# Erstellen eines neuen Verzeichnisses "Projektdaten"
+dir.create("Projektdaten")
+
+# Überprüfen, ob das Verzeichnis erfolgreich erstellt wurde
+if (dir.exists("Projektdaten")) {
+   print("Das Verzeichnis wurde erfolgreich erstellt.")
+} else {
+   print("Das Verzeichnis konnte nicht erstellt werden.")
+}
+
+
+```
+
+## colnames & dput
+
+Die Funktion colnames() wird in R verwendet, um die Spaltennamen einer Matrix, eines Datenrahmens oder eines anderen R-Objekts, das eine tabellarische Struktur hat, zu erhalten oder zu setzen.
+
+Die Funktion dput() gibt eine R-freundliche Darstellung eines Objekts aus, die du direkt in dein R-Skript kopieren und ausführen kannst, um das Objekt erneut zu erstellen. Das ist besonders nützlich, wenn du ein Objekt exportieren oder weitergeben möchtest.
+
+colnames(): Nützlich zum Abrufen und Festlegen der Spaltennamen eines Datenrahmens oder einer Matrix.
+
+dput(): Ermöglicht es, R-Objekte als reproduzierbaren R-Code auszugeben.
+
+```{r}
+
+# colnames()
+
+df <- data.frame(Age = c(25, 30), Name = c("Anna", "Bert"))
+colnames(df) # Anzeige der Spaltennamen
+
+colnames(df) <- c("Alter", "Vorname")  # Hinzufügen von zusätzlichen Spalten
+
+colnames(df)
+
+
+
+# dput(colnames())
+
+dput(colnames(df)) # Dies gibt die Spaltennamen als R-freundlichen Code aus, den du in anderen Skripten oder in einer neuen R-Sitzung verwenden kannst.
+
+
+```
+
+# Wrangling
+
+## the pipe: `%>%` or `|>`
+
+Der %>% Operator wird von dem Paket magrittr bzw. häufig auch über das dplyr-Paket bereitgestellt. Dieser Operator leitet den Output einer Funktion als Input in die nächste Funktion weiter, ohne dass du den Zwischenschritt explizit speichern musst. --> fördert die Lesbarkeit des Codes
+
+Statt den Output jedes einzelnen Schritts zu speichern, erlaubt der Pipe-Operator das direkte Weiterleiten der Daten zum nächsten Schritt.
+
+Der |> Operator ist der neue, native Pipe-Operator in Base R und wurde mit R Version 4.1 eingeführt. Er hat eine ähnliche Funktion wie %>%, ist aber in der R-Umgebung nativ integriert, sodass du kein zusätzliches Paket wie dplyr oder magrittr benötigst.
+
+Wichtige Unterschiede zwischen %>% und |>:
+Kompatibilität: %>% stammt aus dem Paket magrittr und ist nicht Teil von Base R, während |> nativ in R 4.1 eingeführt wurde.
+Verhalten: Der %>%-Operator bietet einige zusätzliche Features wie z.B. das automatische Einfügen des Platzhalters . für fehlende Argumente. Der native Pipe-Operator |> erfordert explizitere Funktionsaufrufe.
+
+
+```{r}
+
+# %>%
+
+# Beispiel mit %>%
+df <- data.frame(Zahlen = 1:5)
+
+df %>%
+  mutate(Quadrat = Zahlen^2) %>%
+  filter(Quadrat > 10)
+
+
+# |>
+
+# Beispiel mit |>
+df <- data.frame(Zahlen = 1:5)
+
+df |>
+  transform(Quadrat = Zahlen^2) |>
+  subset(Quadrat > 10)
+
+
+```
+
+## round_half_up
+
+Die Funktion round_half_up(), stammt aus dem janitor-Paket in R. Diese Funktion wird verwendet, um numerische Werte nach dem sogenannten "Round-Half-Up" Verfahren zu runden. Dabei wird bei einer Dezimalstelle von 5 immer aufgerundet, was dem in der Mathematik häufig verwendeten Rundungsprinzip entspricht.
+
+Rundungsverhalten:
+Bei der herkömmlichen R-Funktion round() wird bei einer Dezimalstelle von 5 je nach der vorherigen Zahl gerundet (abgerundet bei geraden Zahlen, aufgerundet bei ungeraden Zahlen, dies nennt man "Banker's Rounding").
+Die round_half_up() Funktion rundet hingegen immer nach oben, wenn die zu rundende Dezimalstelle 5 oder größer ist. Dies entspricht dem Standard, den wir im Alltag gewohnt sind.
+
+Die Funktion ist besonders nützlich, wenn du präzise Rundergebnisse benötigst, die nicht dem "Banker's Rounding" folgen sollen, sondern immer nach den gängigen mathematischen Rundungsregeln.
+
+```{r}
+
+# janitor::round_half_up()
+
+# Mit der Standard-R-Funktion round()
+round(2.5)  # Gibt 2 zurück (Banker's Rounding)
+round(3.5)  # Gibt 4 zurück
+
+# Mit round_half_up aus dem janitor Paket
+round_half_up(2.5)  # Gibt 3 zurück
+round_half_up(3.5)  # Gibt 4 zurück
+
+
+```
+
+## clean_names
+
+Die Funktion clean_names() aus dem Paket janitor ist eine sehr nützliche Funktion in R, die häufig verwendet wird, um die Spaltennamen eines DataFrames oder einer Tabelle zu bereinigen. Dies ist besonders hilfreich, wenn du mit Daten arbeitest, die aus externen Quellen stammen und möglicherweise problematische Spaltennamen enthalten (z.B. Leerzeichen, Sonderzeichen oder Großbuchstaben).
+
+Die clean_names()-Funktion standardisiert und bereinigt die Spaltennamen eines DataFrames. Sie entfernt Leerzeichen, Sonderzeichen und konvertiert Großbuchstaben in Kleinbuchstaben, um konsistente und maschinenfreundliche Spaltennamen zu erstellen.
+
+```{r}
+
+# janitor::clean_names()
+
+clean_names(df)
+
+# Installieren und laden des janitor-Pakets, falls nicht bereits geschehen
+# install.packages("janitor")
+library(janitor)
+
+# Ein DataFrame mit unübersichtlichen Spaltennamen
+df <- data.frame(
+  `Vorname ` = c("Anna", "Bert"),  # Leerzeichen am Ende
+  `Alter (%)` = c(28, 34),         # Sonderzeichen
+  `Land` = c("DE", "AT"),
+  check.names = FALSE              # Damit R die Namen nicht automatisch anpasst
+)
+
+# Spaltennamen vor der Bereinigung anzeigen
+colnames(df)
+
+# Bereinigen der Spaltennamen
+df_clean <- clean_names(df)
+
+# Spaltennamen nach der Bereinigung anzeigen
+colnames(df_clean)
+
+
+```
+
+## filter
+Filter is for rows (horizonal)
+
+Die Funktion filter() aus dem dplyr-Paket ist eine der wichtigsten Funktionen in der Datenmanipulation in R. Sie wird verwendet, um Zeilen aus einem DataFrame basierend auf bestimmten Bedingungen auszuwählen oder zu "filtern".
+
+Die Funktion filter() erlaubt es dir, Zeilen aus einem DataFrame auszuwählen, die bestimmten Bedingungen entsprechen. Das ist besonders hilfreich, wenn du große Datensätze hast und nur bestimmte Datenreihen für eine Analyse verwenden möchtest.
+
+```{r}
+
+# dplyr::filter()
+
+# Ein Beispiel-Datenrahmen
+df <- data.frame(Name = c("Anna", "Bert", "Clara", "David"),
+                 Alter = c(28, 34, 23, 45),
+                 Land = c("DE", "AT", "CH", "DE"))
+
+
+# Anwenden der filter-Funktion
+df_filtered <- filter(df, Alter > 30)
+
+# Ausgabe des gefilterten DataFrames
+df_filtered
+
+df_filtered <- filter(df, Alter > 30, Land == "DE")
+
+# Ausgabe des gefilterten DataFrames
+df_filtered
+
+df %>%
+  filter(Alter > 30, Land == "DE")
+
+
+
+
+```
+
+## slice
+
+Slice is for retaining or dropping rows from a df.
+
+We might use it just after reading in files if there are junk rows at the header.
+
+Die Funktion slice() aus dem Paket dplyr ist eine weitere nützliche Funktion zur Datenmanipulation in R. Sie wird verwendet, um spezifische Zeilen eines DataFrames zu extrahieren oder zu behalten. Dies ist besonders hilfreich, wenn du gezielt bestimmte Zeilen (oder einen Bereich von Zeilen) aus deinem DataFrame auswählen möchtest.
+
+Mit slice() kannst du Zeilen nach ihrer Position auswählen. Im Gegensatz zu filter(), wo du Bedingungen definierst, basiert slice() auf der Zeilenposition. Du kannst Zeilen entweder durch Angabe einer spezifischen Zeilenposition oder eines Bereichs von Zeilen auswählen.
+
+```{r}
+
+# dplyr::slice()
+
+mtcars # this should have 32 rows
+slice(mtcars, 2:n()) # this should have 31 rows
+
+
+
+
+# Den mtcars-Datensatz betrachten
+head(mtcars)
+
+# Auswahl der ersten 5 Zeilen mit slice()
+mtcars_slice <- slice(mtcars, 1:5)
+
+# Ausgabe der gefilterten Zeilen
+mtcars_slice
+
+mtcars <- mtcars  # mtcars hat 32 Zeilen
+slice(mtcars, 2:n())  # Dies entfernt die erste Zeile und gibt 31 Zeilen zurück
+
+
+slice(mtcars, c(1, 3, 5))  # Wählt die 1., 3. und 5. Zeile aus
+
+
+mtcars %>%
+  arrange(desc(wt)) %>%
+  slice(1:3)  # Wählt die drei schwersten Autos
+
+
+```
+
+## select
+Does choose some of the variables. You can also exclude some variables with select, there you would have to add a minus sign. If you want exclude several variables you have to type !c(). Select is for columns (vertical)
+
+Die Funktion select() aus dem dplyr-Paket wird in R verwendet, um spezifische Spalten eines DataFrames auszuwählen. Diese Funktion ist äußerst praktisch, wenn du nur bestimmte Variablen (Spalten) für deine Analyse verwenden möchtest oder wenn du irrelevante Spalten schnell entfernen möchtest.
+
+Mit select() kannst du gezielt Spalten eines DataFrames auswählen oder entfernen, indem du einfach die Namen der gewünschten Spalten angibst. Die Reihenfolge, in der du die Spalten angibst, bestimmt auch die Reihenfolge der Spalten im Ergebnis.
+
+select() bietet auch die Möglichkeit, Spalten nach bestimmten Mustern oder Bedingungen auszuwählen. Hier einige nützliche Möglichkeiten: starts_with, ends_with, matches, contains, oder mit Negationszeichen
+
+```{r}
+
+sele
+
+# dplyr::select()
+
+
+# Den mtcars-Datensatz betrachten
+head(mtcars)
+
+# Auswahl spezifischer Spalten mit select()
+mtcars_selected <- select(mtcars, mpg, hp, wt)
+
+# Ausgabe der ausgewählten Spalten
+head(mtcars_selected)
+
+
+mtcars %>%
+  select(mpg, hp, wt) %>%
+  filter(hp > 100)
+
+
+```
+
+## rename
+
+Die Funktion rename() aus dem dplyr-Paket in R wird verwendet, um die Spaltennamen eines DataFrames umzubenennen. Sie bietet eine sehr einfache und lesbare Möglichkeit, gezielt einzelne Spaltennamen zu ändern, ohne alle Spalten des DataFrames anzupassen.
+
+Mit rename() kannst du bestimmte Spalten in einem DataFrame umbenennen. Der Rest des DataFrames bleibt dabei unverändert. Du gibst dabei die neuen Namen als Argumente an und setzt sie mit den bisherigen Spaltennamen in Beziehung.
+
+Während select() verwendet wird, um Spalten auszuwählen oder aus dem DataFrame zu entfernen, ändert rename() nur die Namen der Spalten und lässt den Rest des DataFrames unangetastet.
+
+```{r}
+
+# dplyr::rename()
+
+library(dplyr)
+
+# Den mtcars-Datensatz betrachten
+head(mtcars)
+
+# Umbenennen der Spalte 'mpg' in 'miles_per_gallon'
+mtcars_renamed <- rename(mtcars, miles_per_gallon = mpg)
+
+# Ausgabe der umbenannten Spalten
+head(mtcars_renamed)
+
+mtcars_renamed <- rename(mtcars, miles_per_gallon = mpg, horsepower = hp)
+
+
+
+```
+
+## mutate
+
+Die Funktion mutate() aus dem dplyr-Paket in R wird verwendet, um neue Spalten zu einem DataFrame hinzuzufügen oder bestehende Spalten zu verändern. Diese Funktion ist äußerst nützlich, wenn du neue Variablen berechnen oder bestehende Werte basierend auf anderen Spalten verändern möchtest.
+
+Mit mutate() kannst du neue Variablen erstellen oder bestehende Spalten im DataFrame verändern, indem du Berechnungen oder Transformationen auf vorhandenen Spalten anwendest. Die neue Spalte wird dabei an den ursprünglichen DataFrame angehängt.
+
+```{r}
+
+# dplyr::mutate()
+
+
+# Den mtcars-Datensatz betrachten
+head(mtcars)
+
+# Hinzufügen einer neuen Spalte, die das Verhältnis von Gewicht zu Pferdestärke berechnet
+mtcars_mutated <- mutate(mtcars, wt_hp_ratio = wt / hp)
+
+# Ausgabe des DataFrames mit der neuen Spalte
+head(mtcars_mutated)
+
+mtcars_mutated <- mutate(mtcars, wt_hp_ratio = wt / hp, mpg_km = mpg * 1.60934)
+
+
+mtcars_mutated <- mutate(mtcars, mpg = mpg * 1.60934)
+
+
+mtcars %>%
+  mutate(wt_hp_ratio = wt / hp) %>%
+  filter(wt_hp_ratio > 0.1)
+
+
+
+```
+
+## case_when
+
+Die Funktion case_when() aus dem dplyr-Paket in R ist eine sehr nützliche Funktion, um mehrere Bedingungen gleichzeitig in einem Codeblock zu definieren und zu überprüfen. Sie ist ähnlich wie eine Reihe von verschachtelten ifelse()-Anweisungen, aber viel übersichtlicher und lesbarer.
+
+Die case_when()-Funktion wird verwendet, um eine Spalte oder eine Variable basierend auf mehreren Bedingungen zu erstellen oder zu verändern. Jede Bedingung wird ausgewertet und wenn sie wahr ist, wird der entsprechende Wert zurückgegeben.
+
+Vorteile gegenüber ifelse():
+Lesbarkeit: case_when() ermöglicht es dir, mehrere Bedingungen in einem Block übersichtlich darzustellen, anstatt viele verschachtelte ifelse()-Bedingungen zu verwenden.
+Flexibilität: Du kannst beliebig viele Bedingungen hinzufügen, ohne dass der Code unübersichtlich wird.
+True ~ Default-Wert: Der Einsatz von TRUE ~ default_value gibt dir die Möglichkeit, einen Standardwert für alle Fälle zu definieren, die nicht durch die vorherigen Bedingungen abgedeckt sind.
+
+```{r}
+
+# dplyr::case_when() # instead of ifelse()
+
+dplyr::case_when(
+  condition1 ~ value1,
+  condition2 ~ value2,
+  TRUE ~ default_value
+)
+
+
+
+# Den mtcars-Datensatz betrachten
+head(mtcars)
+
+# Erstellen einer neuen Spalte mit case_when
+mtcars_new <- mtcars %>%
+  mutate(mpg_category = case_when(
+    mpg < 15 ~ "Niedrig",
+    mpg >= 15 & mpg < 25 ~ "Mittel",
+    mpg >= 25 ~ "Hoch"
+  ))
+
+# Ausgabe des DataFrames mit der neuen Spalte
+head(mtcars_new)
+
+
+```
+
+## summarize
+
+Die Funktion summarize() (auch summarise() geschrieben) aus dem dplyr-Paket in R wird verwendet, um zusammenfassende Statistiken aus einem DataFrame zu erstellen. Diese Funktion ist besonders nützlich, wenn du aggregierte Werte wie Mittelwerte, Summen oder andere statistische Kennzahlen über bestimmte Gruppen berechnen möchtest.
+
+Die Funktion summarize() reduziert einen DataFrame auf eine einzige Zeile, die aggregierte Statistiken basierend auf den Daten enthält. Du kannst in Verbindung mit group_by() arbeiten, um zusammenfassende Statistiken über verschiedene Gruppen in den Daten zu berechnen.
+
+Oft wird summarize() in Verbindung mit der Funktion group_by() verwendet, um zusammenfassende Statistiken für verschiedene Gruppen zu berechnen. Zum Beispiel kannst du den mtcars-Datensatz nach der Anzahl der Zylinder (cyl) gruppieren und dann den Durchschnitt von mpg und das Maximum von hp für jede Gruppe berechnen
+
+Nützliche Funktionen in summarize():
+mean(): Berechnet den Durchschnitt.
+sum(): Berechnet die Summe.
+max(): Gibt das Maximum zurück.
+min(): Gibt das Minimum zurück.
+n(): Zählt die Anzahl der Zeilen in jeder Gruppe.
+sd(): Berechnet die Standardabweichung
+
+```{r}
+
+# dplyr::summarize() 
+
+# Berechnung von Durchschnitt und Maximum über alle Zeilen
+summary_stats <- mtcars %>%
+  summarize(avg_mpg = mean(mpg), max_hp = max(hp))
+
+# Ausgabe der zusammengefassten Statistiken
+summary_stats
+
+# Gruppierung nach Anzahl der Zylinder und Berechnung von Durchschnitt und Maximum
+summary_by_cyl <- mtcars %>%
+  group_by(cyl) %>%
+  summarize(avg_mpg = mean(mpg), max_hp = max(hp))
+
+# Ausgabe der gruppierten zusammengefassten Statistiken
+summary_by_cyl
+
+
+
+```
+
+## count
+
+Die Funktion count() aus dem dplyr-Paket in R wird verwendet, um die Häufigkeit von Einträgen in einem DataFrame zu zählen. Sie hilft dir dabei, schnell zu überprüfen, wie oft bestimmte Werte oder Kombinationen von Werten in den Daten vorkommen.
+
+Die count()-Funktion gruppiert Daten nach einem oder mehreren Spaltenwerten und zählt, wie oft diese Gruppen in den Daten vorkommen. Es ist eine Kombination aus group_by() und summarize(n = n()), aber kürzer und bequemer zu verwenden.
+
+
+
+```{r}
+
+# dplyr::count()
+
+# Zählen der Häufigkeit von Zylindern im mtcars-Datensatz
+cyl_count <- mtcars %>%
+  count(cyl)
+
+# Ausgabe der Häufigkeiten
+cyl_count
+
+
+gear_cyl_count <- mtcars %>%
+  count(cyl, gear)
+
+# Ausgabe der Häufigkeiten für Zylinder und Ganganzahl
+gear_cyl_count
+
+
+cyl_count_sorted <- mtcars %>%
+  count(cyl, sort = TRUE)
+
+# Ausgabe der nach Häufigkeit sortierten Ergebnisse
+cyl_count_sorted
+
+
+weighted_count <- mtcars %>%
+  count(cyl, wt = hp)
+
+# Ausgabe der gewichteten Zählungen
+weighted_count
+
+
+```
+
+## distinct
+
+Die Funktion distinct() aus dem dplyr-Paket in R wird verwendet, um eindeutige (also distinct) Zeilen in einem DataFrame zu extrahieren. Mit dieser Funktion kannst du Duplikate entfernen und nur die einzigartigen Zeilen oder Kombinationen von Werten beibehalten.
+
+distinct() gibt alle einzigartigen Zeilen in einem DataFrame zurück oder einzigartig nach bestimmten Spalten, falls du diese explizit angibst.
+
+```{r}
+
+# dplyr::distinct()
+
+
+# Eindeutige Werte für die Zylinderanzahl
+distinct_cyl <- mtcars %>%
+  distinct(cyl)
+
+# Ausgabe der eindeutigen Zylinderwerte
+distinct_cyl
+
+distinct_cyl_gear <- mtcars %>%
+  distinct(cyl, gear)
+
+# Ausgabe der eindeutigen Kombinationen von Zylinder- und Ganganzahl
+distinct_cyl_gear
+
+
+distinct_cyl_gear_full <- mtcars %>%
+  distinct(cyl, gear, .keep_all = TRUE)
+
+# Ausgabe der vollständigen Zeilen, aber mit eindeutigen Kombinationen von Zylinder- und Ganganzahl
+distinct_cyl_gear_full
+
+
+```
+
+## group_by
+
+Die Funktion group_by() aus dem dplyr-Paket in R ist eine zentrale Funktion zur Gruppierung von Daten. Sie wird häufig in Kombination mit anderen Funktionen wie summarize() oder mutate() verwendet, um berechnete Statistiken für jede Gruppe separat zu erstellen. Wenn du Daten nach einer bestimmten Variable gruppierst, werden die Operationen, die du nach der Gruppierung ausführst, auf jede Gruppe einzeln angewendet.
+
+Mit group_by() kannst du einen DataFrame in Gruppen einteilen, die auf einer oder mehreren Spalten basieren. Nach der Gruppierung kannst du dann zusammenfassende Statistiken für jede Gruppe erstellen oder andere Operationen ausführen.
+
+```{r}
+
+# dplyr::group_by() # or ".by =" 
+
+# Gruppierung nach der Anzahl der Zylinder und Berechnung des Durchschnitts von mpg
+grouped_data <- mtcars %>%
+  group_by(cyl) %>%
+  summarize(avg_mpg = mean(mpg))
+
+# Ausgabe der gruppierten und zusammengefassten Daten
+grouped_data
+
+grouped_data_multi <- mtcars %>%
+  group_by(cyl, gear) %>%
+  summarize(avg_mpg = mean(mpg))
+
+# Ausgabe der gruppierten Daten
+grouped_data_multi
+
+
+mtcars_grouped <- mtcars %>%
+  group_by(cyl) %>%
+  mutate(relative_mpg = mpg / mean(mpg))
+
+# Ausgabe der Daten mit der neuen Spalte relative_mpg
+head(mtcars_grouped)
+
+
+
+```
+
+## rowwise
+
+Die Funktion rowwise() aus dem dplyr-Paket in R wird verwendet, um Operationen auf Zeilenebene durchzuführen, anstatt auf Spalten- oder Gruppenebene, wie es bei group_by() der Fall ist. Sie ist besonders nützlich, wenn du Berechnungen über mehrere Spalten in einer einzelnen Zeile durchführen möchtest.
+
+rowwise() wird verwendet, um die Daten in Zeilen zu „gruppieren“, sodass Berechnungen auf jeder Zeile separat angewendet werden. Dies kann hilfreich sein, wenn du Operationen über mehrere Spalten hinweg auf jeder einzelnen Zeile durchführen musst.
+
+Der rowwise()-Ansatz wird oft dann genutzt, wenn du Funktionen wie sum(), mean(), min(), max(), oder benutzerdefinierte Funktionen auf mehrere Spalten anwenden möchtest, aber für jede Zeile separat.
+
+Unterschied zu group_by()
+Während group_by() Daten nach den Werten in einer Spalte oder mehreren Spalten gruppiert und Berechnungen auf Gruppenebene durchführt, gruppiert rowwise() die Daten „nach Zeilen“, sodass jede Zeile als ihre eigene „Gruppe“ betrachtet wird. Dies ist besonders nützlich, wenn du Operationen über mehrere Spalten auf jeder einzelnen Zeile durchführen möchtest.
+
+```{r}
+
+# dplyr::rowwise()
+
+# Anwenden von rowwise und Berechnung des Maximums für jede Zeile
+mtcars_rowwise <- mtcars %>%
+  rowwise() %>%
+  mutate(max_value = max(c(mpg, hp, wt)))
+
+# Ausgabe der Daten mit der neuen Spalte max_value
+head(mtcars_rowwise)
+
+mtcars_rowwise_sum <- mtcars %>%
+  rowwise() %>%
+  mutate(total_power = sum(c(hp, wt)))
+
+# Ausgabe der Daten mit der neuen Spalte total_power
+head(mtcars_rowwise_sum)
+
+
+```
+
+## lead
+
+Die Funktion lead() aus dem dplyr-Paket in R wird verwendet, um die Werte einer Spalte in einem DataFrame um eine bestimmte Anzahl von Zeilen nach unten zu verschieben. Sie ist besonders hilfreich, wenn du zeitliche oder sequenzielle Analysen durchführen möchtest und den nächsten Wert in einer Reihe berechnen willst, um Differenzen oder Trends zu ermitteln.
+
+lead() verschiebt die Werte einer Spalte um eine angegebene Anzahl von Positionen nach unten. Das bedeutet, dass die aktuellen Zeilen mit den Werten der folgenden Zeilen ersetzt werden.
+
+```{r}
+
+# dplyr::lead()
+
+# Verschieben der 'mpg'-Werte um eine Zeile nach unten
+mtcars_shifted <- mtcars %>%
+  mutate(lead_mpg = lead(mpg))
+
+# Ausgabe der Daten mit der neuen Spalte 'lead_mpg'
+head(mtcars_shifted)
+
+mtcars_diff <- mtcars %>%
+  mutate(mpg_change = lead(mpg) - mpg)
+
+# Ausgabe der Daten mit der neuen Spalte 'mpg_change'
+head(mtcars_diff)
+
+mtcars_shifted <- mtcars %>%
+  mutate(lead_mpg = lead(mpg, order_by = hp))
+
+
+```
+
+## lag
+
+Die Funktion lag() aus dem dplyr-Paket in R funktioniert ähnlich wie die lead()-Funktion, nur dass die Werte einer Spalte um eine bestimmte Anzahl von Zeilen nach oben statt nach unten verschoben werden. lag() wird häufig verwendet, um den vorherigen Wert einer Reihe oder Zeitperiode zu berechnen, was besonders bei Zeitreihenanalysen hilfreich ist.
+
+lag() verschiebt die Werte einer Spalte um eine angegebene Anzahl von Positionen nach oben. Das bedeutet, dass die aktuellen Zeilen mit den Werten der vorherigen Zeilen ersetzt werden.
+
+```{r}
+
+# dplyr::lag()
+
+# Verschieben der 'mpg'-Werte um eine Zeile nach oben
+mtcars_shifted <- mtcars %>%
+  mutate(lag_mpg = lag(mpg))
+
+# Ausgabe der Daten mit der neuen Spalte 'lag_mpg'
+head(mtcars_shifted)
+
+mtcars_diff <- mtcars %>%
+  mutate(mpg_change = mpg - lag(mpg))
+
+# Ausgabe der Daten mit der neuen Spalte 'mpg_change'
+head(mtcars_diff)
+
+mtcars_shifted <- mtcars %>%
+  mutate(lag_mpg = lag(mpg, order_by = hp))
+
+
+```
+
+## joins
+
+In R, insbesondere mit dem dplyr-Paket, sind Joins sehr nützlich, um zwei Datensätze anhand gemeinsamer Spalten miteinander zu kombinieren. Es gibt verschiedene Arten von Joins, die je nach der Struktur der Daten und dem gewünschten Ergebnis angewendet werden können.
+
+Ein Full Join kombiniert zwei Datensätze und gibt alle Zeilen von beiden Datensätzen zurück. Wo es Übereinstimmungen in den Schlüsseln gibt, werden die Werte der entsprechenden Zeilen kombiniert. Falls keine Übereinstimmung besteht, wird der fehlende Wert als NA gefüllt.
+
+Ein Left Join gibt alle Zeilen aus dem linken (ersten) Datensatz zurück und nur die Zeilen aus dem rechten (zweiten) Datensatz, bei denen es Übereinstimmungen in den Schlüsseln gibt. Fehlt eine Übereinstimmung, werden die fehlenden Werte mit NA gefüllt.
+
+Ein Right Join gibt alle Zeilen aus dem rechten (zweiten) Datensatz zurück und nur die Zeilen aus dem linken (ersten) Datensatz, bei denen es Übereinstimmungen in den Schlüsseln gibt. Fehlt eine Übereinstimmung, werden die fehlenden Werte mit NA gefüllt.
+
+Ein Inner Join gibt nur die Zeilen zurück, bei denen es Übereinstimmungen in den Schlüsseln zwischen beiden Datensätzen gibt. Es werden keine Zeilen mit fehlenden Werten (NA) zurückgegeben.
+
+Ein Semijoin gibt nur die Zeilen aus dem ersten Datensatz zurück, bei denen es eine Übereinstimmung in den Schlüsseln mit dem zweiten Datensatz gibt. Im Gegensatz zu anderen Joins werden die Spalten des zweiten Datensatzes nicht zurückgegeben, sondern nur die Übereinstimmungen identifiziert.
+
+```{r}
+
+df1 <- data.frame(id = 1:3, value1 = c("A", "B", "C"))
+df2 <- data.frame(id = c(2, 3, 4), value2 = c("X", "Y", "Z"))
+
+# dplyr::full_join()
+
+full_join(df1, df2, by = "id")
+
+# dplyr::left_join()
+
+left_join(df1, df2, by = "id")
+
+# dplyr::right_join()
+
+right_join(df1, df2, by = "id")
+
+# dplyr::inner_join()
+
+inner_join(df1, df2, by = "id")
+
+# dplyr::semi_join()
+
+semi_join(df1, df2, by = "id")
+```
+
+## pivots
+
+Die Funktionen pivot_wider() und pivot_longer() aus dem tidyr-Paket in R werden verwendet, um Daten zu „pivotieren“ bzw. die Form eines DataFrames zu ändern. Diese Funktionen sind extrem nützlich, um Daten von einer „breiten“ in eine „lange“ Form (oder umgekehrt) zu transformieren, was oft notwendig ist, um Daten besser für bestimmte Analysen oder Visualisierungen vorzubereiten.
+
+wider:  Diese Funktion verwandelt Daten aus einer „langen“ Form in eine „breite“ Form. Das bedeutet, dass sie eine einzelne Spalte mit Werten in mehrere Spalten aufteilt.
+
+longer: Diese Funktion verwandelt Daten aus einer „breiten“ Form in eine „lange“ Form. Dabei werden mehrere Spalten in eine einzige Spalte zusammengeführt.
+
+```{r}
+
+df_long <- data.frame(
+  Name = c("Anna", "Anna", "Bert", "Bert"),
+  Variable = c("Alter", "Geschlecht", "Alter", "Geschlecht"),
+  Wert = c(28, "weiblich", 34, "männlich")
+)
+
+# tidyr::pivot_wider()
+
+df_wide <- pivot_wider(df_long, names_from = Variable, values_from = Wert)
+
+# Ausgabe des breiten DataFrames
+df_wide
+
+df_wide <- data.frame(
+  Name = c("Anna", "Bert"),
+  Alter = c(28, 34),
+  Geschlecht = c("weiblich", "männlich")
+)
+
+
+# tidyr::pivot_longer()
+df_long <- pivot_longer(df_wide, cols = c(Alter, Geschlecht), names_to = "Variable", values_to = "Wert")
+
+# Ausgabe des langen DataFrames
+df_long
+
+
+```
+
+## drop_na
+
+Die Funktion drop_na() aus dem tidyr-Paket in R wird verwendet, um Zeilen mit fehlenden Werten (NA) aus einem DataFrame zu entfernen. Diese Funktion ist sehr nützlich, wenn du mit Daten arbeitest, die Lücken enthalten, und du nur vollständige Fälle für deine Analyse verwenden möchtest.
+
+Entfernt alle Zeilen aus einem DataFrame, die fehlende Werte (NA) enthalten, entweder in allen Spalten oder nur in bestimmten Spalten, die du angibst.
+
+
+
+```{r}
+
+df <- data.frame(
+  Name = c("Anna", "Bert", "Clara", NA),
+  Alter = c(28, 34, NA, 22),
+  Geschlecht = c("weiblich", "männlich", "weiblich", "männlich")
+)
+
+
+# tidyr::drop_na()
+
+df_clean <- drop_na(df)
+
+# Ausgabe des bereinigten DataFrames
+df_clean
+
+
+df_clean_age <- drop_na(df, Alter)
+
+# Ausgabe des bereinigten DataFrames
+df_clean_age
+
+
+```
+
+## separate
+
+Die Funktion separate() aus dem tidyr-Paket in R wird verwendet, um eine einzelne Spalte, die mehrere Informationen enthält, in mehrere Spalten aufzuteilen. Dies ist besonders hilfreich, wenn Daten in einem kombinierten Format vorliegen und du die Informationen in separaten Spalten benötigst, um besser damit arbeiten zu können.
+
+Zerlegt eine Spalte mit kombinierten Informationen in mehrere Spalten. Dies geschieht normalerweise basierend auf einem Trennzeichen (z.B. Leerzeichen, Komma, Bindestrich), das in den Werten der Spalte vorkommt.
+
+```{r}
+
+
+df <- data.frame(
+  ID = 1:3,
+  Datum_Uhrzeit = c("2023-10-01 10:30", "2023-10-02 12:00", "2023-10-03 14:15")
+)
+
+
+# tidyr::separate()
+
+df_separated <- separate(df, col = Datum_Uhrzeit, into = c("Datum", "Uhrzeit"), sep = " ")
+
+# Ausgabe des DataFrames mit den neuen Spalten
+df_separated
+
+df <- data.frame(Name = c("Anna-Bert", "Clara-David"))
+df_separated <- separate(df, col = Name, into = c("Vorname", "Nachname"), sep = "-")
+
+
+
+```
+
+## fill
+
+Die Funktion fill() aus dem tidyr-Paket in R wird verwendet, um fehlende (NA) Werte in einem DataFrame mit den vorherigen oder nachfolgenden Werten in derselben Spalte aufzufüllen. Dies ist besonders nützlich, wenn du mit Daten arbeitest, die teilweise unvollständig sind, aber einen Wert von einer vorherigen Zeile übernehmen sollten, wie es oft bei Zeitreihendaten der Fall ist.
+
+Füllt fehlende Werte (NA) in einer Spalte mit dem letzten vorhandenen Wert (oder optional mit dem nächsten vorhandenen Wert). Du kannst entscheiden, ob dies zeilenweise nach unten oder nach oben geschehen soll.
+
+```{r}
+
+# tidyr::fill()
+
+
+
+df <- data.frame(
+  Monat = c("Januar", "Februar", "März", "April"),
+  Umsatz = c(100, NA, NA, 300)
+)
+
+# Füllen der NA-Werte mit dem letzten vorhandenen Wert
+df_filled <- fill(df, Umsatz, .direction = "down")
+
+# Ausgabe des DataFrames mit den gefüllten Werten
+df_filled
+
+df_filled_up <- fill(df, Umsatz, .direction = "up")
+
+# Ausgabe des DataFrames mit den gefüllten Werten in umgekehrter Richtung
+df_filled_up
+
+```
+
+# Printing tables
+
+Die Funktion kable() aus dem knitr-Paket wird verwendet, um einfache Tabellen in einem übersichtlichen Format zu drucken. Sie ist besonders nützlich in R Markdown-Dokumenten, um HTML- oder LaTeX-Tabellen zu generieren.
+
+Das Paket kableExtra erweitert die Funktionalität von kable() und ermöglicht es dir, Tabellen noch ansprechender und anpassbarer zu gestalten. Eine beliebte Funktion ist kable_classic(), die eine klassische, übersichtliche Tabellenansicht erzeugt.
+
+```{r}
+
+# mtcars |> # example data
+#   knitr::kable() |> # print a nicer looking table
+#   kableExtra::kable_classic(full_width = FALSE) # print nicer again
+
+library(knitr)
+
+# Erstellen einer einfachen Tabelle mit kable
+kable(mtcars, caption = "Mtcars Dataset")
+
+
+library(kableExtra)
+
+# Erstellen einer klassisch formatierten Tabelle mit kable_classic
+kable(mtcars) %>%
+  kable_classic(full_width = FALSE)
+
+
+```
+
+# Other packages 
+
+Other packages you may need for wrangling which aren't covered here:
+
+- library(forcats). Everything to do with factors and factor levels. Useful for plotting and establishing reference levels for statistical tests.
+- library(stringr). Everything to do with strings, searching for strings, modifying strings, parsing them, etc.
+- library(lubridate). Everything to do with dates, parsing dates, converting date formats, etc. 
+
+# Session info
+
+```{r}
+
+sessionInfo()
+
+```
+
+
+
