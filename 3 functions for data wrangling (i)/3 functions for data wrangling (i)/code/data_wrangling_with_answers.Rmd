@@ -657,8 +657,10 @@ class(data_selfreport_tidy$response) # sanity check if the values are 4real nume
 What other ways are there of implementing this mutate, e.g., without using `%in%`? What are the pros and cons of each?
 
 ```{r}
-?ifelse
 
+data_selfreport_tidy <- data_selfreport_trimmed %>%
+  mutate(response = ifelse(response == "Ctrl+'B'", NA, response),
+                           response = as.numeric(response))
 
 # write examples here
 
