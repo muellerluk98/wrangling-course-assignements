@@ -697,12 +697,12 @@ This is easier to show than explain. What do you expect the output of the below 
 
 ```{r}
 
-round(0.5)
-round(1.5)
-round(2.5)
-round(3.5)
-round(4.5)
-round(5.5)
+round(0.5) # should be 1, bankers rounding will give us 0
+round(1.5) # should be 2, bankers rounding will give us 2
+round(2.5) # should be 3, bankers rounding will give us 2
+round(3.5) # should be 4, bankers rounding will give us 4
+round(4.5) # should be 5, bankers rounding will give us 4
+round(5.5) # should be 6, bankers rounding will give us 6
 
 ```
 
