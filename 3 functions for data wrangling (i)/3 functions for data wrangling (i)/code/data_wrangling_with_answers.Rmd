@@ -136,13 +136,14 @@ The pipe is a very useful explanation in R because you can tell the programme to
 ```{r}
 
 # use a function without the pipe
-???
+nopipe <- clean_names(data_demographics_raw)
 
 # use a function with the pipe. 
-???
+pipe <- data_demographics_raw %>%
+  clean_names()
 
 # check they produce identical results
-???
+identical(pipe, nopipe)
 
 ```
 
