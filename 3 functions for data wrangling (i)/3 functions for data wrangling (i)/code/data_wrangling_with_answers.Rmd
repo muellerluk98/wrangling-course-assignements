@@ -149,8 +149,6 @@ identical(pipe, nopipe)
 
 We use the pipe to make our code look way more smoother. By using the pipe we can keep the code compact and we can make one order with many steps.
 
-
-
 ```{r}
 
 # use a function without the pipe
