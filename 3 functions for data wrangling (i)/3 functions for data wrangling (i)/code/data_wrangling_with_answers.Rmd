@@ -69,8 +69,6 @@ The function getwd() shows you an absolute filepath which leads to your current 
 ```
 
 
-
-
 ## Use relative paths
 
 Either through Rmarkdown files, Quarto files, or in regular .R files using the {here} library (see https://here.r-lib.org/).
@@ -119,7 +117,7 @@ so the answer is that there are different amounts of rows in the dataframes beca
 
 - Why are the numbers not round?
 
-The numbers are round hahah?!
+The numbers are round hahah?! --> They aren´t round in the sense that they aren´t a multiplicated version of each other. That´s because there are some missing values for some participants.
 
 # The pipe (%>% or %>%) --> shouldn´t there be this sign |>
 
