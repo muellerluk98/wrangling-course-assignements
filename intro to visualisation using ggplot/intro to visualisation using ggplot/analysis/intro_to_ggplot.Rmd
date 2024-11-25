@@ -292,27 +292,24 @@ Make a similar density plot for the AMP.
 
 OK- Add a theme. 
 OK- Make the X axis breaks prettier. 
-- Name both axis names more clearly.  
+OK- Name both axis names more clearly.  
 
 ```{r}
 
-plotamp <-
+plotamp <- 
   ggplot(data = data_after_exclusions,
          aes(x = amp_score)) +
-  geom_density(adjust = 1,
-               color = "#FF69B4",
-               fill = "darkblue",
-               alpha = 0.3) +
-  scale_x_continuous(breaks = scales::breaks_pretty(n = 7),
-                     name = "AMP score") +
-  scale_y_continuous(name = "count") +
-  theme_barbie()
-
+  geom_density(adjust = 1,  # Degree of smoothing
+               color = "#FF69B4",  # Line color
+               fill = "darkblue",  # Fill color
+               alpha = 0.3) +  # Transparency for the fill
+  # Make the X axis breaks prettier and name the axes clearly
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 7),  # Prettier breaks on x-axis
+                     name = "AMP score") +  # Name for x-axis
+  scale_y_continuous(name = "Density") +  # Name for y-axis
+  theme_barbie()  # Add the theme
 
 plotamp
-
-
-
 
 ```
 
