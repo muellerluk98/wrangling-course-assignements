@@ -1,6 +1,6 @@
 ---
 title: "Introduction to {ggplot2}"
-author: "Template: Ian Hussey; Content: [student name]"
+author: "Template: Ian Hussey; Content: Lukas Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
