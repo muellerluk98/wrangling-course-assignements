@@ -456,6 +456,30 @@ Improve the appearance of the plot, including its text, colors, theme, etc.
 
 ```{r}
 
+# Daten wrangeln: Teilnehmer in Gruppen einteilen (Alter und Geschlecht)
+data_processed <- data_processed |> 
+  mutate(age_group = ifelse(age >= 30, "30+ years", "Younger than 30"))
+
+# Plot erstellen mit facet_grid
+plot_exercise <- ggplot(data = data_processed,
+                        aes(x = mean_self_report,
+                            y = amp_score)) +
+  geom_point(alpha = 0.7, color = "blue") +  # Punkte hinzufügen
+  geom_smooth(method = "lm", color = "red") +  # Lineare Regression hinzufügen
+  facet_grid(gender ~ age_group) +  # Facet nach Geschlecht (Zeilen) und Altersgruppe (Spalten)
+  labs(
+    title = "Association between Self-Report Scores and AMP Scores",
+    x = "Self-Report Scores",
+    y = "AMP Scores"
+  ) +
+  theme_minimal() +  # Minimalistisches Theme
+  theme(
+    strip.text = element_text(size = 12, face = "bold"),  # Facet-Titel hervorheben
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5)  # Plot-Titel zentrieren
+  )
+
+# Plot anzeigen
+plot_exercise
 
 
 ```
