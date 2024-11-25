@@ -236,6 +236,35 @@ plotAMP
 - Exercise: How to add a dashed vertical line at the sample's mean AMP score?
 Um eine gestrichelte vertikale Linie beim Mittelwert des AMP-Scores im Plot hinzuzufügen, kannst du geom_vline() verwenden.
 
+```{r}
+# Berechnung des Mittelwerts der AMP-Scores
+mean_amp_score <- mean(data_after_exclusions$amp_score, na.rm = TRUE)
+
+# Plot mit gestrichelter vertikaler Linie bei mean_amp_score
+plotAMP <- 
+  ggplot(data = data_after_exclusions,
+         aes(x = amp_score)) +
+  geom_histogram(binwidth = 0.1, 
+                 boundary = 0, 
+                 color = "black", 
+                 fill = "gray", 
+                 alpha = 0.9) +
+  geom_vline(xintercept = mean_amp_score,  # Hinzufügen der vertikalen Linie
+             linetype = "dashed",  # Linie als gestrichelt definieren
+             color = "red",        # Farbe der Linie
+             size = 1) +           # Dicke der Linie
+  scale_x_continuous(breaks = seq(0, 1, .10),
+                     name = "AMP score") +
+  scale_y_continuous(breaks = seq(0, 40, 5),
+                     name = "Frequency") +
+  labs(title = "AMP Score Distribution with Mean Line") +  # Titel hinzufügen
+  theme_minimal()
+
+plotAMP
+
+```
+
+
 
 # Density plot using `geom_density()`
 
