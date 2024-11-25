@@ -37,6 +37,8 @@ pivots helfen uns das format der daten zu ändern
 library(dplyr)
 library(tidyr)
 library(tibble)
+install.packages("devtools")
+devtools::install_github("debruine/faux")
 library(faux)
 library(janitor)
 library(ggplot2)
