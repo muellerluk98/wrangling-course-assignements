@@ -214,14 +214,18 @@ Create a similar plot for the AMP scores in `data_after_exclusions`.
 
 ```{r}
 
-plotAMP <-
+plotAMP <- 
   ggplot(data = data_after_exclusions,
          aes(x = amp_score)) +
-  geom_histogram(binwidth = 0.1) +
+  geom_histogram(binwidth = 0.1, 
+                 boundary = 0,  # Align bins
+                 color = "black",  # Add border around bars
+                 fill = "gray", 
+                 alpha = 0.9) +  # Transparency
   scale_x_continuous(breaks = seq(0, 1, .10),
                      name = "AMP score") +
   scale_y_continuous(breaks = seq(0, 40, 5),
-                     name = "Frequency")
+                     name = "Frequency") +
   theme_minimal()
 
 plotAMP
