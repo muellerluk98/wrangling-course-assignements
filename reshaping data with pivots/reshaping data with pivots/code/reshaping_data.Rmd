@@ -123,7 +123,7 @@ ggplot(data_wide_likert, aes(x = item_5)) +
 
 - These plots repeat the mortal coding sin of repeating ourselves. If we reshaped the data to 'long' format we could use just one ggplot() call that includes facet_wrap(). 
 
-## Reshape
+## Reshape we do this usually with pivot
 
 Using `pivot_longer()`.
 
