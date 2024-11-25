@@ -199,7 +199,12 @@ Create a similar plot for the gender variable in `data_processed` (ie before exc
 
 ```{r}
 
-
+ggplot(data = data_processed, 
+       aes(x = gender)) +
+  geom_bar() +  # Automatically counts occurrences for categorical data
+  scale_x_discrete(name = "Geschlecht") +  # Customize x-axis label
+  scale_y_continuous(name = "Häufigkeit", breaks = scales::breaks_pretty(n = 7)) +  # Customize y-axis label and breaks
+  theme_minimal()  # Use a clean theme
 
 ```
 
