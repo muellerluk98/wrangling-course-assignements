@@ -28,6 +28,8 @@ dir.create("plots")
 
 ```
 
+pivots helfen uns das format der daten zu ändern
+
 # Dependencies
 
 ```{r}
