@@ -234,6 +234,7 @@ plotAMP
 ```
 
 - Exercise: How to add a dashed vertical line at the sample's mean AMP score?
+Um eine gestrichelte vertikale Linie beim Mittelwert des AMP-Scores im Plot hinzuzufügen, kannst du geom_vline() verwenden.
 
 
 # Density plot using `geom_density()`
