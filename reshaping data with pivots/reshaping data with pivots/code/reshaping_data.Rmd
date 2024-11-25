@@ -173,6 +173,8 @@ data_wide_again <- data_long %>%
 
 ## Combine item and sum scores in one data frame
 
+if we would use bindcols we would be fucked
+
 ```{r}
 
 data_item_and_sum_scores <- data_wide_again %>%
