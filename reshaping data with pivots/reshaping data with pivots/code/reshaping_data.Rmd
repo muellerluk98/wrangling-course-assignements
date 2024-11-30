@@ -209,6 +209,13 @@ demographics_wide <- demographics %>%
     values_from = response   # Die Spalte, deren Werte in die neuen Spalten kommen
   )
 
+# jetzt möchte ich, dass in der alters spalte nur noch numerische werte stehen
+demographics_wide <- demographics_wide %>%
+  mutate(age = (as.numeric(age)))
+
+# 1 kleiner sanity check: Antworten und Häufigkeiten in der Spalte "age" anzeigen
+demographics_wide %>%
+  count(age, sort = TRUE)  # Zählt alle Werte und sortiert nach Häufigkeit
 
 
 
