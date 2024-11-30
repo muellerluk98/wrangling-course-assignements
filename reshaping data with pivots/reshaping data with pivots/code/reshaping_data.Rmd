@@ -241,6 +241,16 @@ demographics_wide_withoutNAs <- demographics_wide %>%
 demographics_wide_withoutNAs <- demographics_wide_withoutNAs %>%
   select(subject, age, gender)
 
+# now we go from long to wide format so that every subject has one line
+demographics_clean <- demographics_wide_withoutNAs %>%
+  group_by(subject) %>%  # Gruppiere nach `subject`
+  summarise(
+    age = max(age, na.rm = TRUE),       # Wähle den maximalen Wert für `age`, ignoriere NAs
+    gender = max(gender, na.rm = TRUE)  # Wähle den maximalen Wert für `gender`, ignoriere NAs
+  ) %>%
+  ungroup()  # Gruppierung aufheben
+
+
 
 
 ```
