@@ -189,8 +189,15 @@ Wrangle the demographics data included in this exercise more efficiently by resh
 here I have to wrangle the data
 we did this once before with filter now we try to change the data format from long to wide.
 
-```{r}
+Wide-Format: Mehr Spalten und weniger Zeilen (wenn jede Zeile eine Einheit darstellt).
+Long-Format: Weniger Spalten und mehr Zeilen (jede Zeile ist eine Messung).
 
+```{r}
+# first I have to load the data
+demographics <- read_csv(file = "../data/raw/data_demographics_raw.csv") 
+
+# second I look at the data
+show(demographics)
 
 
 ```
