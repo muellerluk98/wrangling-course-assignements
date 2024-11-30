@@ -233,6 +233,15 @@ demographics_wide <- demographics_wide %>%
     )
   )
 
+# Zeilen entfernen, bei denen sowohl "gender" als auch "age" NA sind
+demographics_wide_withoutNAs <- demographics_wide %>%
+  filter(!(is.na(gender) & is.na(age)))
+
+# Datensatz auf die gewünschten Spalten reduzieren --> nur noch subject age und gender
+demographics_wide_withoutNAs <- demographics_wide_withoutNAs %>%
+  select(subject, age, gender)
+
+
 
 ```
 
