@@ -217,6 +217,21 @@ demographics_wide <- demographics_wide %>%
 demographics_wide %>%
   count(age, sort = TRUE)  # Zählt alle Werte und sortiert nach Häufigkeit
 
+# zuerst schaue ich mal was es denn so für Antworten in der Sparte gender hat und lass mir diese anzeigen
+demographics_wide %>%
+  count(gender, sort = TRUE)  # Zählt alle Werte und sortiert nach Häufigkeit
+
+# jetzt wranglen wir die gender variable
+demographics_wide <- demographics_wide %>%
+  mutate(
+    gender = tolower(gender),  # Standardisierung
+    gender = case_when(
+      gender %in% c("male", "man", "m") ~ 1,
+      gender %in% c("female", "woman", "f") ~ 2,
+      gender %in% c("non-binary", "non binary", "nb") ~ 3,
+      TRUE ~ NA_real_
+    )
+  )
 
 
 ```
