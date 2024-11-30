@@ -202,6 +202,14 @@ show(demographics)
 # third I check if the data is in long or in wide format --> Datensatz ist im Long Format
 dim(demographics)  # Gibt Zeilen und Spaltenanzahl aus
 
+# Umwandlung von Long- zu Wide-Format --> es entstehen nun die spalten age und gender
+demographics_wide <- demographics %>%
+  pivot_wider(
+    names_from = trialcode,  # Die Spalte, deren Werte neue Spaltennamen werden
+    values_from = response   # Die Spalte, deren Werte in die neuen Spalten kommen
+  )
+
+
 
 
 ```
