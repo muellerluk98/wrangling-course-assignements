@@ -199,6 +199,10 @@ demographics <- read_csv(file = "../data/raw/data_demographics_raw.csv")
 # second I look at the data
 show(demographics)
 
+# third I check if the data is in long or in wide format --> Datensatz ist im Long Format
+dim(demographics)  # Gibt Zeilen und Spaltenanzahl aus
+
+
 
 ```
 
