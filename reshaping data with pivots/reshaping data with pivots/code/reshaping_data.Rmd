@@ -28,9 +28,10 @@ dir.create("plots")
 
 ```
 
-pivots helfen uns das format der daten zu ändern
+Pivots helfen uns das Format der Daten zu ändern.
 
 # Dependencies
+--> einfach abbrechen drücken. devtools macht irgendwie schwierigkeiten.
 
 ```{r}
 
@@ -53,6 +54,7 @@ library(kableExtra)
 # Example
 
 ## Simulate data in wide format
+hier haben wir einfach mal Daten per Simulation erstellt.
 
 ```{r}
 
@@ -175,6 +177,7 @@ data_wide_again <- data_long %>%
 
 if we would use bindcols we would be fucked
 
+
 ```{r}
 
 data_item_and_sum_scores <- data_wide_again %>%
@@ -191,6 +194,8 @@ we did this once before with filter now we try to change the data format from lo
 
 Wide-Format: Mehr Spalten und weniger Zeilen (wenn jede Zeile eine Einheit darstellt).
 Long-Format: Weniger Spalten und mehr Zeilen (jede Zeile ist eine Messung).
+
+! ich habe eine Warnmeldung hmm
 
 ```{r}
 # first I have to load the data
