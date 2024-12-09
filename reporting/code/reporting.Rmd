@@ -154,7 +154,7 @@ cohens_d(mpg ~ am, data = mtcars)
 
 ```
 
-## Multilevel/hierarchical/mixed models
+## Multilevel/hierarchical/mixed models 
 
 ```{r}
 
